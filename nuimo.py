@@ -4,7 +4,7 @@ import Queue
 import threading
 
 from bled112 import Bled112Com
-from gatt import BleManager, BleRemoteTimeout
+from gatt import BleManager, BleRemoteTimeout, BleLocalTimeout
 import logging
 import time
 
@@ -57,7 +57,7 @@ class Nuimo:
                 self._setup_notifications()
 
                 self.delegate.on_connect()
-            except BleRemoteTimeout:
+            except (BleRemoteTimeout, BleLocalTimeout):
                 time.sleep(5)
 
     def disconnect(self):
