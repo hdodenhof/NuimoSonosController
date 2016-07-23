@@ -101,7 +101,8 @@ class Nuimo:
     def on_message(self, message):
         if message.attHandle == self.characteristics_handles['BATTERY']:
             logging.debug('Battery state')
-            MessageHandler.queue((self.delegate.on_battery_state, message.data[0]))
+            level = int(message.data[0] / 255 * 100)
+            MessageHandler.queue((self.delegate.on_battery_state, level))
         if message.attHandle == self.characteristics_handles['BUTTON']:
             if (message.data[0] == 1):
                 logging.debug('Button pressed')
