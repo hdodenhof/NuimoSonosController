@@ -1,6 +1,5 @@
 from __future__ import division
 
-import Queue
 import threading
 
 from bled112 import Bled112Com
@@ -196,7 +195,7 @@ class NuimoDelegate:
 
 class MessageHandler(threading.Thread):
 
-    msg_queue = Queue.Queue()
+    next_msg = None
 
     def __init__(self):
         super(MessageHandler, self).__init__()
@@ -207,8 +206,12 @@ class MessageHandler(threading.Thread):
             if self.stop:
                 break
 
+            if not MessageHandler.next_msg:
+                time.sleep(0.01)
+                continue
+
             try:
-                msg = MessageHandler.msg_queue.get(False)
+                msg = MessageHandler.next_msg
                 if isinstance(msg, tuple):
                     func = msg[0]
                     args = msg[1:]
@@ -216,13 +219,16 @@ class MessageHandler(threading.Thread):
                 else:
                     msg()
             except Exception as e:
-                if not isinstance(e, Queue.Empty): logging.exception(e)
-                time.sleep(0.01)
-                continue
+                logging.exception(e)
+
+            MessageHandler.next_msg = None
 
     def terminate(self):
         self.stop = True
 
     @staticmethod
     def queue(msg):
-        MessageHandler.msg_queue.put(msg)
+        if (MessageHandler.next_msg):
+            return
+
+        MessageHandler.next_msg = msg
