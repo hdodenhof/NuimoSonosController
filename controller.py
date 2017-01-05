@@ -19,10 +19,10 @@ nuimo_sonos_controller = None
 
 class NuimoSonosController(NuimoDelegate):
 
-    def __init__(self, bled_com, nuimo_mac, sonos_host, sonos_port, sonos_zone):
+    def __init__(self, bled_com, nuimo_mac):
         NuimoDelegate.__init__(self)
         self.nuimo = Nuimo(bled_com, nuimo_mac, self)
-        self.sonos = SonosAPI(sonos_host, sonos_port, sonos_zone)
+        self.sonos = SonosAPI()
         self.default_led_timeout = 3
         self.max_volume = 42 # should be dividable by 7
         self.volume_bucket_size = int(self.max_volume / 7)
@@ -114,14 +114,11 @@ if __name__ == "__main__":
     signal.signal(signal.SIGTERM, signal_term_handler)
     signal.signal(signal.SIGINT, signal_int_handler)
 
-    if len(sys.argv) != 6:
+    if len(sys.argv) != 3:
         raise RuntimeError('Invalid number of arguments')
 
     com = sys.argv[1]
     mac = sys.argv[2]
-    host = sys.argv[3]
-    port = sys.argv[4]
-    zone = sys.argv[5]
 
-    nuimo_sonos_controller = NuimoSonosController(com, mac, host, port, zone)
+    nuimo_sonos_controller = NuimoSonosController(com, mac)
     nuimo_sonos_controller.start()

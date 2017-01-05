@@ -1,72 +1,41 @@
-import json
-import logging
-import urllib2
-
-
-class SonosAction:
-    def __init__(self, command):
-        self.command = command
-
-    def url_part(self):
-        return self.command
-
-class ParamSonosAction(SonosAction):
-    def __init__(self, command, param):
-        SonosAction.__init__(self, command)
-        self.param = param
-
-    def url_part(self):
-        return SonosAction.url_part(self) + '/' + self.param
+import soco
 
 
 class SonosAPI:
 
-    ACTION_STATE = SonosAction('state')
-    ACTION_PLAY = SonosAction('play')
-    ACTION_PAUSE = SonosAction('pause')
-    ACTION_NEXT = SonosAction('next')
-    ACTION_PREV = SonosAction('previous')
-
     STATE_PLAYING = 'PLAYING'
 
-    def __init__(self, url, port, zone):
-        self.base_url = 'http://{}:{}/{}/'.format(url, port, zone)
+    def __init__(self):
+        self.players = soco.discover()
+
+        for player in self.players:
+            if player.is_coordinator:
+                self.coordinator = player
 
     def is_playing(self):
-        try:
-            return self._get_state_item('playbackState') == self.STATE_PLAYING
-        except:
-            return False
+        return self.coordinator.get_current_transport_info()['current_transport_state'] == self.STATE_PLAYING
 
     def get_volume(self):
-        try:
-            return self._get_state_item('volume')
-        except:
-            return None
+        return self.coordinator.volume
 
     def play(self):
-        self._request(self.ACTION_PLAY)
+        self.coordinator.play()
 
     def pause(self):
-        self._request(self.ACTION_PAUSE)
+        self.coordinator.pause()
 
     def next(self):
-        self._request(self.ACTION_NEXT)
+        self.coordinator.next()
 
     def prev(self):
-        self._request(self.ACTION_PREV)
+        self.coordinator.previous()
 
     def vol_up(self, value):
-        self._request(ParamSonosAction('groupVolume', '+' + str(value)))
+        self._set_volume(self.coordinator.volume + value)
 
     def vol_down(self, value):
-        self._request(ParamSonosAction('groupVolume', '-' + str(value)))
+        self._set_volume(self.coordinator.volume - value)
 
-    def _get_state_item(self, item):
-        return json.load(self._request(self.ACTION_STATE))[item]
-
-    def _request(self, action):
-        try:
-            return urllib2.urlopen(self.base_url + action.url_part())
-        except Exception as e:
-            logging.exception(e)
+    def _set_volume(self, value):
+        for player in self.players:
+            player.volume = value
