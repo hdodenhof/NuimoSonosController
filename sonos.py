@@ -26,8 +26,6 @@ class SonosAPI:
     ACTION_PAUSE = SonosAction('pause')
     ACTION_NEXT = SonosAction('next')
     ACTION_PREV = SonosAction('previous')
-    ACTION_VOLUP = ParamSonosAction('groupVolume', '+1')
-    ACTION_VOLDOWN = ParamSonosAction('groupVolume', '-1')
 
     STATE_PLAYING = 'PLAYING'
 
@@ -59,10 +57,10 @@ class SonosAPI:
         self._request(self.ACTION_PREV)
 
     def vol_up(self, value):
-        self._request(self.ACTION_VOLUP)
+        self._request(ParamSonosAction('groupVolume', '+' + str(value)))
 
     def vol_down(self, value):
-        self._request(self.ACTION_VOLDOWN)
+        self._request(ParamSonosAction('groupVolume', '-' + str(value)))
 
     def _get_state_item(self, item):
         return json.load(self._request(self.ACTION_STATE))[item]

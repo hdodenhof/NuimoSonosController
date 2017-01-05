@@ -65,15 +65,18 @@ class NuimoSonosController(NuimoDelegate):
         self.on_swipe_left()
 
     def on_wheel_right(self, value):
-        self.sonos.vol_up(1)
+        self.sonos.vol_up(self._calculate_volume_delta(value))
         self._show_volume()
 
     def on_wheel_left(self, value):
-        self.sonos.vol_down(1)
+        self.sonos.vol_down(self._calculate_volume_delta(value))
         self._show_volume()
 
     def on_connect(self):
         self.nuimo.display_led_matrix(led_configs.default, self.default_led_timeout)
+
+    def _calculate_volume_delta(self, value):
+        return min(value / 20 + 1, 5)
 
     def _show_volume(self):
         volume = self.sonos.get_volume()
