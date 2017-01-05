@@ -34,7 +34,7 @@ class SonosAPI:
 
     def is_playing(self):
         try:
-            return self._get_state_item('zoneState') == self.STATE_PLAYING
+            return self._get_state_item('playbackState') == self.STATE_PLAYING
         except:
             return False
 
