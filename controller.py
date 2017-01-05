@@ -24,7 +24,7 @@ class NuimoSonosController(NuimoDelegate):
         self.nuimo = Nuimo(bled_com, nuimo_mac, self)
         self.sonos = SonosAPI(sonos_host, sonos_port, sonos_zone)
         self.default_led_timeout = 3
-        self.max_volume = 35 # should be dividable by 7
+        self.max_volume = 42 # should be dividable by 7
         self.volume_bucket_size = int(self.max_volume / 7)
         self.last_vol_matrix = None
         self.vol_reset_timer = None
