@@ -105,9 +105,9 @@ class Nuimo:
         if message.attHandle == self.characteristics_handles['BUTTON']:
             if (message.data[0] == 1):
                 logging.debug('Button pressed')
+                MessageHandler.queue(self.delegate.on_button)
             else:
                 logging.debug('Button released')
-                MessageHandler.queue(self.delegate.on_button)
         elif message.attHandle == self.characteristics_handles['SWIPE']:
             if (message.data[0] == 0):
                 logging.debug('Swipe left')
