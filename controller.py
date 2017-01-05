@@ -36,6 +36,7 @@ class NuimoSonosController(NuimoDelegate):
         while not self.stop_pending:
             time.sleep(0.1)
 
+        self.sonos.disconnect()
         self.nuimo.disconnect()
         self.nuimo.terminate()
 
