@@ -86,8 +86,8 @@ class NuimoSonosController(NuimoDelegate):
         matrix = getattr(led_configs, 'vol' + str(bucket))
 
         if matrix != self.last_vol_matrix:
-            self.nuimo.display_led_matrix(matrix, self.default_led_timeout)
             self.last_vol_matrix = matrix
+            self.nuimo.display_led_matrix(matrix, self.default_led_timeout)
             if self.vol_reset_timer is not None:
                 self.vol_reset_timer.cancel()
             self.vol_reset_timer = Timer(self.default_led_timeout+1, self._reset_vol).start()
